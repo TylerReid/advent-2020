@@ -8,7 +8,6 @@ lazy_static! {
     static ref R: Regex = Regex::new("^(\\d*)-(\\d*) (.): (.*)$").unwrap();
 }
 
-#[allow(dead_code)]
 pub fn day_two() {
     let file = File::open("input/day2.txt").unwrap();
 
@@ -21,7 +20,7 @@ pub fn day_two() {
 
     for pw in raw_passwords.iter() {
         let p = parse_entry(pw);
-        if p.is_valid() {
+        if p.is_valid_two() {
             valid += 1;
         }
     }
@@ -52,5 +51,11 @@ impl PasswordEntry {
             .matches(self.required_letter)
             .count();
         self.min <= n && n <= self.max
+    }
+
+    fn is_valid_two(&self) -> bool {
+        let one = self.value.chars().nth(self.min - 1).unwrap() == self.required_letter;
+        let two = self.value.chars().nth(self.max - 1).unwrap() == self.required_letter;
+        one ^ two
     }
 }
