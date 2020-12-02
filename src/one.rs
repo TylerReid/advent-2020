@@ -1,7 +1,8 @@
 use std::fs;
 
 pub fn day_one() {
-    let expenses = fs::read_to_string("day1.txt")
+    //todo figure out cross platform path stuff
+    let expenses = fs::read_to_string("input/day1.txt")
         .expect("oh no")
         .lines()
         .map(|x| x.parse::<i32>().unwrap())
