@@ -1,5 +1,6 @@
 use std::fs;
 
+#[allow(dead_code)]
 pub fn day_one() {
     //todo figure out cross platform path stuff
     let expenses = fs::read_to_string("input/day1.txt")
