@@ -4,8 +4,8 @@ extern crate lazy_static;
 
 mod one;
 mod two;
+mod three;
 
 fn main() {
-    //one::day_one();
-    two::day_two();
+    three::day_three();
 }
