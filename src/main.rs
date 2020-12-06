@@ -4,8 +4,8 @@ extern crate lazy_static;
 
 mod four;
 mod five;
-mod five_clever;
+mod six;
 
 fn main() {
-    five_clever::day_five();
+    six::day_six();
 }
