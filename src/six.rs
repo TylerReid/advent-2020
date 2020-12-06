@@ -13,8 +13,9 @@ pub fn day_six() {
         for s in g {
             match intersection {
                 Some(i) => {
-                    
-                    intersection = Some(i.union(&s).copied().collect());
+                    //part one
+                    //intersection = Some(i.union(&s).copied().collect());
+                    intersection = Some(i.intersection(&s).copied().collect());
                 },
                 None => {
                     intersection = Some(s);
