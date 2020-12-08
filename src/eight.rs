@@ -10,13 +10,31 @@ pub fn day_eight() {
         .map(|x| parse(&x))
         .collect::<Vec<_>>();
 
-    let mut machine = Machine {
-        acc: 0,
-        pc: 0,
-        prog: ops,
-    };
-
-    machine.run();
+    for (i, op) in ops.iter().enumerate() {
+        let mut op_copy = ops.clone();
+        match op {
+            Op::Acc(_) => (),
+            Op::Jmp(x) => op_copy[i] = Op::Nop(*x),
+            Op::Nop(x) => op_copy[i] = Op::Jmp(*x),
+        }
+        
+        let mut machine = Machine {
+            acc: 0,
+            pc: 0,
+            prog: op_copy,
+        };
+    
+        let done = machine.run();
+        match done {
+            Some(x) => {
+                println!("finished with acc: {}", x);
+                break;
+            },
+            None => (),
+        }
+    }
+    
+    
 }
 
 #[derive(Debug)]
@@ -30,7 +48,7 @@ struct Machine {
 enum Op {
     Acc(i32),
     Jmp(i32),
-    Nop,
+    Nop(i32),
 }
 
 fn parse(s: &str) -> Op {
@@ -38,32 +56,30 @@ fn parse(s: &str) -> Op {
     match parts[0] {
         "acc" => Op::Acc(parts[1].parse().unwrap()),
         "jmp" => Op::Jmp(parts[1].parse().unwrap()),
-        "nop" => Op::Nop,
+        "nop" => Op::Nop(parts[1].parse().unwrap()),
         x => panic!("bad instruction! {}", x),
     }
 }
 
 impl Machine {
-    fn run(&mut self) {
+    fn run(&mut self) -> Option<i32> {
         let mut seen = HashSet::<usize>::new();
         loop {
+            if self.done() {
+                return Some(self.acc);
+            }
             let i = self.current();
             if seen.contains(&self.pc) {
-                println!("have already seen pc: {} op: {:?} acc: {}", self.pc, i, self.acc);
-                break;
+                return None
             }
             seen.insert(self.pc);
-            let mut done = false;
             match i {
                 Op::Acc(x) => {
                     self.acc += x;
-                    done = self.next();
+                    self.next();
                 },
                 Op::Jmp(x) => self.pc = add(self.pc, x),
-                Op::Nop => done = self.next(),
-            }
-            if done {
-                break;
+                Op::Nop(_) => self.next(),
             }
         }
     }
@@ -72,9 +88,12 @@ impl Machine {
         self.prog[self.pc].clone()
     }
 
-    fn next(&mut self) -> bool {
+    fn next(&mut self) {
         self.pc += 1;
-        self.pc > self.prog.len()
+    }
+
+    fn done(&self) -> bool {
+        self.pc >= self.prog.len()
     }
 }
 
