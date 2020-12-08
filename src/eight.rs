@@ -24,13 +24,9 @@ pub fn day_eight() {
             prog: op_copy,
         };
     
-        let done = machine.run();
-        match done {
-            Some(x) => {
-                println!("finished with acc: {}", x);
-                break;
-            },
-            None => (),
+        if let Some(x) = machine.run() {
+            println!("finished with acc: {}", x);
+            break;
         }
     }
     
@@ -44,7 +40,7 @@ struct Machine {
     prog: Vec<Op>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 enum Op {
     Acc(i32),
     Jmp(i32),
@@ -85,7 +81,7 @@ impl Machine {
     }
 
     fn current(&self) -> Op {
-        self.prog[self.pc].clone()
+        self.prog[self.pc]
     }
 
     fn next(&mut self) {
