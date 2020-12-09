@@ -7,7 +7,8 @@ mod five;
 mod six;
 mod seven;
 mod eight;
+mod nine;
 
 fn main() {
-    eight::day_eight();
+    nine::day_nine();
 }
