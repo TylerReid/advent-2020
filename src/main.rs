@@ -1,14 +1,10 @@
 #![allow(dead_code)]
+#![allow(unused_imports)]
 #[macro_use]
 extern crate lazy_static;
 
-mod four;
-mod five;
-mod six;
-mod seven;
-mod eight;
-mod nine;
+mod ten;
 
 fn main() {
-    nine::day_nine();
+    ten::day_ten();
 }
