@@ -7,7 +7,7 @@ pub fn day_ten() {
         .lines()
         .map(|x| x.parse().unwrap())
         .collect::<Vec<i32>>();
-
+    data.push(0);
     data.sort();
     let laptop_jotlage = data.iter().last().unwrap() + 3;
 
@@ -25,7 +25,7 @@ pub fn day_ten() {
         }
         last_joltage = jolts;
     }
-    //add one more to the three diff since the laptop is alway 3 more
+    //add one more to the three diff since the laptop is always 3 more
     three_jolt += 1;
     println!("{:?}", data);
     println!("part one: {} * {} = {}", one_jolt, three_jolt, one_jolt * three_jolt);
@@ -64,5 +64,3 @@ fn number_of_paths(data: &Vec<Vec<usize>>, cached_paths: &mut HashMap<usize, u64
     }
     paths
 }
-
-//[1, 2, 3, 4, 7, 8, 9, 10, 11, 14, 17, 18, 19, 20, 23, 24, 25, 28, 31, 32, 33, 34, 35, 38, 39, 42, 45, 46, 47, 48, 49]
