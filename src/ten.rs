@@ -1,5 +1,5 @@
-use std::fs;
 use std::collections::HashMap;
+use std::fs;
 
 pub fn day_ten() {
     let mut data = fs::read_to_string("input/day10.txt")
@@ -28,9 +28,14 @@ pub fn day_ten() {
     }
     //add one more to the three diff since the laptop is always 3 more
     three_jolt += 1;
-    println!("part one: {} * {} = {}", one_jolt, three_jolt, one_jolt * three_jolt);
+    println!(
+        "part one: {} * {} = {}",
+        one_jolt,
+        three_jolt,
+        one_jolt * three_jolt
+    );
 
-    let mut edges =std::iter::repeat(vec![])
+    let mut edges = std::iter::repeat(vec![])
         .take(data.len())
         .collect::<Vec<Vec<usize>>>();
 
@@ -44,10 +49,17 @@ pub fn day_ten() {
         }
     }
 
-    println!("part two: {:?}", number_of_paths(&edges, &mut HashMap::new(), data.len() - 1));
+    println!(
+        "part two: {:?}",
+        number_of_paths(&edges, &mut HashMap::new(), data.len() - 1)
+    );
 }
 
-fn number_of_paths(data: &Vec<Vec<usize>>, cached_paths: &mut HashMap<usize, u64>, i: usize) -> u64 {
+fn number_of_paths(
+    data: &Vec<Vec<usize>>,
+    cached_paths: &mut HashMap<usize, u64>,
+    i: usize,
+) -> u64 {
     if i == 0 {
         return 1;
     }

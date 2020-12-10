@@ -29,9 +29,12 @@ pub fn day_nine() {
         for y in x..found_index {
             sum += data[y];
             if sum == found_value {
-                let r = &data[x..y+1];
-                println!("found values: {:?}", &data[x..y+1]);
-                println!("weakness: {}", r.iter().min().unwrap() + r.iter().max().unwrap());
+                let r = &data[x..y + 1];
+                println!("found values: {:?}", &data[x..y + 1]);
+                println!(
+                    "weakness: {}",
+                    r.iter().min().unwrap() + r.iter().max().unwrap()
+                );
                 break 'outer;
             }
         }
@@ -52,5 +55,3 @@ fn is_sum_of_two(r: &[u64], v: u64) -> bool {
 
     false
 }
-
-

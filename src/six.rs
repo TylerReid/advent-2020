@@ -1,25 +1,23 @@
-use std::fs;
 use std::collections::HashSet;
+use std::fs;
 
 pub fn day_six() {
     let file = fs::read_to_string("input/day6.txt").unwrap();
-    let groups: Vec<Vec<HashSet<char>>> = file.split("\n\n")
-        .map(|x| create_sets(x))
-        .collect();
+    let groups: Vec<Vec<HashSet<char>>> = file.split("\n\n").map(|x| create_sets(x)).collect();
 
     let mut total = 0;
     for g in groups {
-        let mut intersection: Option<HashSet::<char>> = None;
+        let mut intersection: Option<HashSet<char>> = None;
         for s in g {
             match intersection {
                 Some(i) => {
                     //part one
                     //intersection = Some(i.union(&s).copied().collect());
                     intersection = Some(i.intersection(&s).copied().collect());
-                },
+                }
                 None => {
                     intersection = Some(s);
-                },
+                }
             }
         }
         total += intersection.unwrap().len();

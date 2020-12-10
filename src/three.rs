@@ -21,7 +21,7 @@ fn tree_hit_count(rows: &Vec<Vec<Square>>, right: usize, down: usize) -> u32 {
     let mut tree_count = 0;
     let mut h = 0;
     let row_length = rows[0].len();
-    
+
     let mut i = 0;
     while i < rows.len() {
         match &rows[i][h] {
@@ -34,7 +34,6 @@ fn tree_hit_count(rows: &Vec<Vec<Square>>, right: usize, down: usize) -> u32 {
     }
     tree_count
 }
-
 
 fn parse(s: &str) -> Vec<Square> {
     let mut v = Vec::new();

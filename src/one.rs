@@ -7,7 +7,7 @@ pub fn day_one() {
         .lines()
         .map(|x| x.parse::<i32>().unwrap())
         .collect::<Vec<i32>>();
-    
+
     'outer: for i in 0..expenses.len() {
         'inner: for j in (0..expenses.len()).rev() {
             if i == j {
@@ -28,7 +28,13 @@ pub fn day_one() {
 
                 let sum = expenses[i] + expenses[j] + expenses[k];
                 if sum == 2020 {
-                    println!("found it! {} + {} + {} = {}", expenses[i], expenses[j], expenses[k], expenses[i] * expenses[j] * expenses[k]);
+                    println!(
+                        "found it! {} + {} + {} = {}",
+                        expenses[i],
+                        expenses[j],
+                        expenses[k],
+                        expenses[i] * expenses[j] * expenses[k]
+                    );
                     break 'outer;
                 }
             }

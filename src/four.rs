@@ -1,11 +1,9 @@
-use std::fs;
 use regex::Regex;
+use std::fs;
 
 pub fn day_four() {
     let file = fs::read_to_string("input/day4.txt").unwrap();
-    let groups: Vec<PassportValidation> = file.split("\n\n")
-        .map(|x| parse(x))
-        .collect();
+    let groups: Vec<PassportValidation> = file.split("\n\n").map(|x| parse(x)).collect();
 
     let mut num_valid = 0;
     for p in groups.iter() {
@@ -20,25 +18,53 @@ fn parse(s: &str) -> PassportValidation {
     //this is dumb but I don't know how to do this in regex or if I could
     let mut byr = BYR.is_match(s);
     if byr {
-        let v = BYR.captures(s).unwrap().get(1).unwrap().as_str().parse::<i32>().unwrap();
+        let v = BYR
+            .captures(s)
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse::<i32>()
+            .unwrap();
         byr = 1920 <= v && v <= 2002;
     }
 
     let mut iyr = IYR.is_match(s);
     if iyr {
-        let v = IYR.captures(s).unwrap().get(1).unwrap().as_str().parse::<i32>().unwrap();
+        let v = IYR
+            .captures(s)
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse::<i32>()
+            .unwrap();
         iyr = 2010 <= v && v <= 2020;
     }
 
     let mut eyr = EYR.is_match(s);
     if eyr {
-        let v = EYR.captures(s).unwrap().get(1).unwrap().as_str().parse::<i32>().unwrap();
+        let v = EYR
+            .captures(s)
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse::<i32>()
+            .unwrap();
         eyr = 2020 <= v && v <= 2030;
     }
 
     let mut hgt = HGT.is_match(s);
     if hgt {
-        let v = HGT.captures(s).unwrap().get(1).unwrap().as_str().parse::<i32>().unwrap();
+        let v = HGT
+            .captures(s)
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse::<i32>()
+            .unwrap();
         let u = HGT.captures(s).unwrap().get(2).unwrap().as_str();
         if u == "in" {
             hgt = 59 <= v && v <= 76
@@ -49,14 +75,14 @@ fn parse(s: &str) -> PassportValidation {
     }
 
     PassportValidation {
-        byr: byr,//done
-        iyr: iyr,//done
-        eyr: eyr,//done
-        hgt: hgt,//done
-        hcl: HCL.is_match(s),//done
-        ecl: ECL.is_match(s),//done
-        pid: PID.is_match(s),//done
-        cid: CID.is_match(s),//done
+        byr: byr,             //done
+        iyr: iyr,             //done
+        eyr: eyr,             //done
+        hgt: hgt,             //done
+        hcl: HCL.is_match(s), //done
+        ecl: ECL.is_match(s), //done
+        pid: PID.is_match(s), //done
+        cid: CID.is_match(s), //done
     }
 }
 
@@ -74,13 +100,7 @@ struct PassportValidation {
 
 impl PassportValidation {
     fn is_valid(&self) -> bool {
-        self.byr &&
-        self.iyr &&
-        self.eyr &&
-        self.hgt &&
-        self.hcl &&
-        self.ecl &&
-        self.pid
+        self.byr && self.iyr && self.eyr && self.hgt && self.hcl && self.ecl && self.pid
     }
 }
 

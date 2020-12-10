@@ -1,6 +1,6 @@
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::{self, BufRead};
-use std::collections::HashSet;
 
 pub fn day_eight() {
     let file = File::open("input/day8.txt").unwrap();
@@ -17,20 +17,18 @@ pub fn day_eight() {
             Op::Jmp(x) => op_copy[i] = Op::Nop(*x),
             Op::Nop(x) => op_copy[i] = Op::Jmp(*x),
         }
-        
+
         let mut machine = Machine {
             acc: 0,
             pc: 0,
             prog: op_copy,
         };
-    
+
         if let Some(x) = machine.run() {
             println!("finished with acc: {}", x);
             break;
         }
     }
-    
-    
 }
 
 #[derive(Debug)]
@@ -66,14 +64,14 @@ impl Machine {
             }
             let i = self.current();
             if seen.contains(&self.pc) {
-                return None
+                return None;
             }
             seen.insert(self.pc);
             match i {
                 Op::Acc(x) => {
                     self.acc += x;
                     self.next();
-                },
+                }
                 Op::Jmp(x) => self.pc = add(self.pc, x),
                 Op::Nop(_) => self.next(),
             }

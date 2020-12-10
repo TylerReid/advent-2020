@@ -1,8 +1,8 @@
 extern crate regex;
 
+use regex::Regex;
 use std::fs::File;
 use std::io::{self, BufRead};
-use regex::Regex;
 
 lazy_static! {
     static ref R: Regex = Regex::new("^(\\d*)-(\\d*) (.): (.*)$").unwrap();
@@ -15,7 +15,7 @@ pub fn day_two() {
         .lines()
         .map(|x| x.unwrap())
         .collect::<Vec<_>>();
-    
+
     let mut valid = 0;
 
     for pw in raw_passwords.iter() {
@@ -47,9 +47,7 @@ struct PasswordEntry {
 
 impl PasswordEntry {
     fn is_valid(&self) -> bool {
-        let n = self.value
-            .matches(self.required_letter)
-            .count();
+        let n = self.value.matches(self.required_letter).count();
         self.min <= n && n <= self.max
     }
 

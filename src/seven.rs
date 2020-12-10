@@ -1,7 +1,7 @@
-use std::fs::File;
-use std::io::{self, BufRead};
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::fs::File;
+use std::io::{self, BufRead};
 
 pub fn day_seven() {
     let file = File::open("input/day7.txt").unwrap();
@@ -32,14 +32,18 @@ pub fn day_seven() {
     println!("part two {}", part_two(&hash, "shiny gold"));
 }
 
-fn part_one(map: &HashMap<String, Vec<(i32, String)>>, collector: &mut HashSet<String>, color: &str) {
+fn part_one(
+    map: &HashMap<String, Vec<(i32, String)>>,
+    collector: &mut HashSet<String>,
+    color: &str,
+) {
     for (k, v) in map.iter() {
         let item = v.iter().find(|&x| x.1 == color);
         match item {
             Some(_) => {
                 collector.insert(k.clone());
                 part_one(map, collector, k);
-            },
+            }
             None => (),
         }
     }
@@ -53,7 +57,7 @@ fn part_two(map: &HashMap<String, Vec<(i32, String)>>, color: &str) -> i32 {
                 total += c.0;
                 total += c.0 * part_two(map, &c.1);
             }
-        },
+        }
         None => (),
     }
     total
