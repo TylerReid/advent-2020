@@ -7,6 +7,7 @@ pub fn day_ten() {
         .lines()
         .map(|x| x.parse().unwrap())
         .collect::<Vec<i32>>();
+    //push a zero because the wall is zero, but not included in the list
     data.push(0);
     data.sort();
     let laptop_jotlage = data.iter().last().unwrap() + 3;
@@ -27,7 +28,6 @@ pub fn day_ten() {
     }
     //add one more to the three diff since the laptop is always 3 more
     three_jolt += 1;
-    println!("{:?}", data);
     println!("part one: {} * {} = {}", one_jolt, three_jolt, one_jolt * three_jolt);
 
     let mut edges =std::iter::repeat(vec![])
@@ -44,8 +44,7 @@ pub fn day_ten() {
         }
     }
 
-    let mut cache = HashMap::new();
-    println!("{:?}", number_of_paths(&edges, &mut cache, data.len() - 1));
+    println!("part two: {:?}", number_of_paths(&edges, &mut HashMap::new(), data.len() - 1));
 }
 
 fn number_of_paths(data: &Vec<Vec<usize>>, cached_paths: &mut HashMap<usize, u64>, i: usize) -> u64 {
