@@ -53,8 +53,8 @@ fn number_of_paths(data: &Vec<Vec<usize>>, cached_paths: &mut HashMap<usize, u64
     }
     let mut paths = 0;
     for &x in data[i].iter() {
-        if cached_paths.contains_key(&x) {
-            paths += cached_paths.get(&x).unwrap();
+        if let Some(p) = cached_paths.get(&x) {
+            paths += p;
         } else {
             let n = number_of_paths(data, cached_paths, x);
             cached_paths.insert(x, n);
