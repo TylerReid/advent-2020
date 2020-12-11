@@ -57,7 +57,7 @@ fn simulate(grid: &Grid) -> SimResult {
             match cell {
                 Cell::Floor => new_row.push(Cell::Floor),
                 Cell::Empty => {
-                    if number_of_neighbors(grid, i, j) == 0 {
+                    if number_of_visible_neighbors(grid, i, j) == 0 {
                         new_row.push(Cell::Occupied);
                         num_occupied += 1;
                         changed = true;
@@ -66,7 +66,7 @@ fn simulate(grid: &Grid) -> SimResult {
                     }
                 },
                 Cell::Occupied => {
-                    if number_of_neighbors(grid, i, j) >= 4 {
+                    if number_of_visible_neighbors(grid, i, j) >= 5 {
                         new_row.push(Cell::Empty);
                         changed = true;
                     } else {
@@ -82,6 +82,67 @@ fn simulate(grid: &Grid) -> SimResult {
         grid: new_grid,
         changed: changed,
         num_occupied: num_occupied,
+    }
+}
+
+fn number_of_visible_neighbors(grid: &Grid, row: usize, column: usize) -> u8 {
+    let mut n = 0;
+    //top left
+    n += if is_next_visible_occupied(grid, row, column, (-1, -1)) { 1 } else { 0 };
+    //top center
+    n += if is_next_visible_occupied(grid, row, column, (-1, 0)) { 1 } else { 0 };
+    //top right
+    n += if is_next_visible_occupied(grid, row, column, (-1, 1)) { 1 } else { 0 };
+
+    //center left
+    n += if is_next_visible_occupied(grid, row, column, (0, -1)) { 1 } else { 0 };
+    //center right
+    n += if is_next_visible_occupied(grid, row, column, (0, 1)) { 1 } else { 0 };
+
+    //bottom left
+    n += if is_next_visible_occupied(grid, row, column, (1, -1)) { 1 } else { 0 };
+    //bottom center
+    n += if is_next_visible_occupied(grid, row, column, (1, 0)) { 1 } else { 0 };
+    //bottom right
+    n += if is_next_visible_occupied(grid, row, column, (1, 1)) { 1 } else { 0 };
+
+    n
+}
+
+fn is_next_visible_occupied(grid: &Grid, r: usize, c: usize, vector: (isize, isize)) -> bool {
+    let num_rows = grid.len();
+    let num_columns = grid[0].len();
+    //this seems silly, but I want them to be mut, but not be &mut usize I think. Not sure how else to do it
+    let mut row = r;
+    let mut column = c;
+    
+    loop {
+        if let (Some(next_row), Some(next_column)) = (next_index(row, vector.0), next_index(column, vector.1)) {
+            if next_row >= num_rows || next_column >= num_columns {
+                break;
+            }
+
+            match grid[next_row][next_column] {
+                Cell::Empty => return false,
+                Cell::Floor => (),
+                Cell::Occupied => return true,
+            }
+
+            row = next_row;
+            column = next_column;
+        } else {
+            break;
+        }
+    }
+
+    false
+}
+
+fn next_index(i: usize, delta: isize) -> Option<usize> {
+    if delta < 0 {
+        i.checked_sub(delta.wrapping_abs() as usize)
+    } else {
+        i.checked_add(delta as usize)
     }
 }
 
