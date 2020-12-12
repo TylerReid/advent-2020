@@ -76,63 +76,17 @@ fn forward(pos: (i32, i32), waypoint: (i32, i32), times: i32) -> (i32, i32) {
 
 //this is dumb, I could put it in an array and + or - based on the rotation, but meh
 fn rotate(r: Rotation, waypoint: (i32, i32), v: i32) -> (i32, i32) {
-    match d {
-        Direction::North => match r {
-            Rotation::Left => match v {
-                90 => Direction::West,
-                180 => Direction::South,
-                270 => Direction::East,
-                _ => panic!("unexpected rotation value {}", v),
-            },
-            Rotation::Right => match v {
-                90 => Direction::East,
-                180 => Direction::South,
-                270 => Direction::West,
-                _ => panic!("unexpected rotation value {}", v),
-            },
+    match v {
+        90 => match r {
+            Rotation::Left => ,
+            Rotation::Right => ,
         },
-        Direction::South => match r {
-            Rotation::Left => match v {
-                90 => Direction::East,
-                180 => Direction::North,
-                270 => Direction::West,
-                _ => panic!("unexpected rotation value {}", v),
-            },
-            Rotation::Right => match v {
-                90 => Direction::West,
-                180 => Direction::North,
-                270 => Direction::East,
-                _ => panic!("unexpected rotation value {}", v),
-            },
+        180 => (-waypoint.0, -waypoint.1),
+        270 => match r {
+            Rotation::Left => ,
+            Rotation::Right => ,
         },
-        Direction::East => match r {
-            Rotation::Left => match v {
-                90 => Direction::North,
-                180 => Direction::West,
-                270 => Direction::South,
-                _ => panic!("unexpected rotation value {}", v),
-            },
-            Rotation::Right => match v {
-                90 => Direction::South,
-                180 => Direction::West,
-                270 => Direction::North,
-                _ => panic!("unexpected rotation value {}", v),
-            },
-        },
-        Direction::West => match r {
-            Rotation::Left => match v {
-                90 => Direction::South,
-                180 => Direction::East,
-                270 => Direction::North,
-                _ => panic!("unexpected rotation value {}", v),
-            },
-            Rotation::Right => match v {
-                90 => Direction::North,
-                180 => Direction::East,
-                270 => Direction::South,
-                _ => panic!("unexpected rotation value {}", v),
-            },
-        },
+        _ => panic!("unexpected rotation {}", v),
     }
 }
 
