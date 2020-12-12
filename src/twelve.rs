@@ -7,17 +7,15 @@ pub fn day_twelve() {
         .map(|x| parse(x))
         .collect::<Vec<Action>>();
 
-    let mut ship = Ship { 
-        direction: Direction::East,
+    let mut ship = Ship {
         position: (0, 0),
-        waypoint: (0, 0),
+        waypoint: (10, 1),
     };
     ship.make_it_so(actions);
 }
 
 #[derive(Debug)]
 struct Ship {
-    direction: Direction,
     position: (i32, i32),
     waypoint: (i32, i32),
 }
@@ -58,24 +56,26 @@ impl Ship {
     fn take_action(&mut self, action: Action) {
         match action {
             Action::Direction(d, v) => match d {
-                Direction::North => self.position = (self.position.0 + v, self.position.1),
-                Direction::South => self.position = (self.position.0 - v, self.position.1),
-                Direction::East => self.position = (self.position.0, self.position.1 + v),
-                Direction::West => self.position = (self.position.0, self.position.1 - v),
+                Direction::North => self.waypoint = (self.position.0 + v, self.position.1),
+                Direction::South => self.waypoint = (self.position.0 - v, self.position.1),
+                Direction::East => self.waypoint = (self.position.0, self.position.1 + v),
+                Direction::West => self.waypoint = (self.position.0, self.position.1 - v),
             },
-            Action::Forward(v) => match self.direction {
-                Direction::North => self.position = (self.position.0 + v, self.position.1),
-                Direction::South => self.position = (self.position.0 - v, self.position.1),
-                Direction::East =>  self.position = (self.position.0, self.position.1 + v),
-                Direction::West =>  self.position = (self.position.0, self.position.1 - v),
-            },
-            Action::Rotation(r, v) => self.direction = rotate(self.direction, r, v),
+            Action::Forward(v) => self.position = forward(self.position, self.waypoint, v),
+            Action::Rotation(r, v) => self.waypoint = rotate(r, self.waypoint, v),
         };
     }
 }
 
+fn forward(pos: (i32, i32), waypoint: (i32, i32), times: i32) -> (i32, i32) {
+    for i in 0..=times {
+        pos = (pos.0 + waypoint.0, pos.1 + waypoint.1);
+    }
+    pos
+}
+
 //this is dumb, I could put it in an array and + or - based on the rotation, but meh
-fn rotate(d: Direction, r: Rotation, v: i32) -> Direction {
+fn rotate(r: Rotation, waypoint: (i32, i32), v: i32) -> (i32, i32) {
     match d {
         Direction::North => match r {
             Rotation::Left => match v {
