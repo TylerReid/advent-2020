@@ -56,10 +56,10 @@ impl Ship {
     fn take_action(&mut self, action: Action) {
         match action {
             Action::Direction(d, v) => match d {
-                Direction::North => self.waypoint = (self.position.0 + v, self.position.1),
-                Direction::South => self.waypoint = (self.position.0 - v, self.position.1),
-                Direction::East => self.waypoint = (self.position.0, self.position.1 + v),
-                Direction::West => self.waypoint = (self.position.0, self.position.1 - v),
+                Direction::North => self.waypoint = (self.waypoint.0, self.waypoint.1 + v),
+                Direction::South => self.waypoint = (self.waypoint.0, self.waypoint.1 - v),
+                Direction::East => self.waypoint = (self.waypoint.0 + v, self.waypoint.1),
+                Direction::West => self.waypoint = (self.waypoint.0 - v, self.waypoint.1),
             },
             Action::Forward(v) => self.position = forward(self.position, self.waypoint, v),
             Action::Rotation(r, v) => self.waypoint = rotate(r, self.waypoint, v),
@@ -67,24 +67,25 @@ impl Ship {
     }
 }
 
-fn forward(pos: (i32, i32), waypoint: (i32, i32), times: i32) -> (i32, i32) {
-    for i in 0..=times {
+fn forward(mut pos: (i32, i32), waypoint: (i32, i32), times: i32) -> (i32, i32) {
+    println!("start pos {:?} to waypoint {:?} {} times", pos, waypoint, times);
+    for i in 0..times {
         pos = (pos.0 + waypoint.0, pos.1 + waypoint.1);
+        println!("next pos {:?}", pos);
     }
     pos
 }
 
-//this is dumb, I could put it in an array and + or - based on the rotation, but meh
 fn rotate(r: Rotation, waypoint: (i32, i32), v: i32) -> (i32, i32) {
     match v {
         90 => match r {
-            Rotation::Left => ,
-            Rotation::Right => ,
+            Rotation::Left => (-waypoint.1, waypoint.0),
+            Rotation::Right => (waypoint.1, -waypoint.0),
         },
         180 => (-waypoint.0, -waypoint.1),
         270 => match r {
-            Rotation::Left => ,
-            Rotation::Right => ,
+            Rotation::Left => (waypoint.1, -waypoint.0),
+            Rotation::Right => (-waypoint.1, waypoint.0),
         },
         _ => panic!("unexpected rotation {}", v),
     }
