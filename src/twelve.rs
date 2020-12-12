@@ -10,16 +10,16 @@ pub fn day_twelve() {
     let mut ship = Ship { 
         direction: Direction::East,
         position: (0, 0),
-        actions: actions 
+        waypoint: (0, 0),
     };
-    ship.make_it_so();
+    ship.make_it_so(actions);
 }
 
 #[derive(Debug)]
 struct Ship {
     direction: Direction,
     position: (i32, i32),
-    actions: Vec<Action>
+    waypoint: (i32, i32),
 }
 
 #[derive(Debug,Clone,Copy)]
@@ -48,31 +48,29 @@ impl Ship {
         self.position.0.abs() + self.position.1.abs()
     }
 
-    fn make_it_so(&mut self) {
-        for &a in self.actions.iter() {
-            let result = self.take_action(a);
-            self.position = result.0;
-            self.direction = result.1;
+    fn make_it_so(&mut self, actions: Vec<Action>) {
+        for &a in actions.iter() {
+            self.take_action(a);
         }
         println!("{}", self.manhattan_distance())
     }
 
-    fn take_action(&self, action: Action) -> ((i32, i32), Direction) {
+    fn take_action(&mut self, action: Action) {
         match action {
             Action::Direction(d, v) => match d {
-                Direction::North => ((self.position.0 + v, self.position.1), self.direction),
-                Direction::South => ((self.position.0 - v, self.position.1), self.direction),
-                Direction::East => ((self.position.0, self.position.1 + v), self.direction),
-                Direction::West => ((self.position.0, self.position.1 - v), self.direction),
+                Direction::North => self.position = (self.position.0 + v, self.position.1),
+                Direction::South => self.position = (self.position.0 - v, self.position.1),
+                Direction::East => self.position = (self.position.0, self.position.1 + v),
+                Direction::West => self.position = (self.position.0, self.position.1 - v),
             },
             Action::Forward(v) => match self.direction {
-                Direction::North => ((self.position.0 + v, self.position.1), self.direction),
-                Direction::South => ((self.position.0 - v, self.position.1), self.direction),
-                Direction::East => ((self.position.0, self.position.1 + v), self.direction),
-                Direction::West => ((self.position.0, self.position.1 - v), self.direction),
+                Direction::North => self.position = (self.position.0 + v, self.position.1),
+                Direction::South => self.position = (self.position.0 - v, self.position.1),
+                Direction::East =>  self.position = (self.position.0, self.position.1 + v),
+                Direction::West =>  self.position = (self.position.0, self.position.1 - v),
             },
-            Action::Rotation(r, v) => ((self.position.0, self.position.1), rotate(self.direction, r, v)),
-        }
+            Action::Rotation(r, v) => self.direction = rotate(self.direction, r, v),
+        };
     }
 }
 
