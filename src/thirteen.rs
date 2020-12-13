@@ -22,9 +22,7 @@ pub fn day_thirteen() {
     for b in bus_ids.iter() {
         if let Some(x) = b {
             let time = earliest_departure - ((earliest_departure % x) - x);
-            println!("{}", time);
             if time < lowest_time {
-                println!("{} {}", time, best_bus);
                 lowest_time = time;
                 best_bus = *x;
             }
@@ -41,20 +39,22 @@ pub fn day_thirteen() {
 
     bus_index.sort_by(|a, b| a.0.cmp(&b.0));
     bus_index.reverse();
-    let max = bus_index[0];
 
     let mut t = 0;
-
-    while t <=i64::MAX {
+    loop {
         if departures_line_up(&bus_index, t) {
             println!("{}", t);
             break;
         }
-        if (t + max.1) % max.0 == 0 {
-            t += max.0;
-        } else {
-            t += 1;
+        let mut step = 1;
+        // for each consecutive match we find, 
+        // we know that the next step has to be a common multiple of all matches
+        for b in bus_index.iter() {
+            if (t + b.1) % b.0 == 0 {
+                step *= b.0;
+            }
         }
+        t += step;
     }
 }
 
