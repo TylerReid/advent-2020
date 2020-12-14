@@ -1,5 +1,6 @@
 use std::fs;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use regex::Regex;
 
 pub fn day_fourteen() {
@@ -9,26 +10,42 @@ pub fn day_fourteen() {
         .map(|x| parse(x))
         .collect::<Vec<Statement>>();
 
-    println!("{:?}", statements);
-
     let mut memory = HashMap::<u64, u64>::new();
     let mut current_mask = String::from("nope");
 
     for s in statements.iter() {
         match s {
             Statement::SetMask(x) => current_mask = String::from(x),
-            Statement::WriteMem{addr, mut value} => {
-                println!("mask: {}\nbits: {:036b}", current_mask, value);
+            Statement::WriteMem{mut addr, value} => {
+                let mut floating_bits = Vec::new();
                 for (i, c) in current_mask.chars().rev().enumerate() {
                     match c {
-                        'X' => (),
-                        '0' => value &= !(1 << i),
-                        '1' => value |= 1 << i,
+                        'X' => floating_bits.push(i),
+                        '0' => (),
+                        '1' => addr |= 1 << i,
                         _ => panic!("bad char {} in {}", c, current_mask),
                     }
                 }
-                memory.insert(*addr, value);
-                println!("res:  {:036b}\n", value);
+                let mut floating_addrs = HashSet::new();
+                floating_addrs.insert(addr);
+                for fb in floating_bits {
+                    //this temp var is here because we can't insert into the hashset while iterating
+                    //probably a less dumb way but I don't know how
+                    let mut temp = HashSet::new();
+                    for a in floating_addrs.iter() {
+                        temp.insert(a & !(1 << fb));
+                        temp.insert(a | 1 << fb);
+                    }
+                    for t in temp {
+                        floating_addrs.insert(t);
+                    }
+                    floating_addrs.insert(addr & !(1 << fb));
+                    floating_addrs.insert(addr | 1 << fb);
+                }
+
+                for a in floating_addrs {
+                    memory.insert(a, *value);
+                }
             },
         }
     }
