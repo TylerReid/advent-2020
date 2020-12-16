@@ -3,8 +3,8 @@
 #[macro_use]
 extern crate lazy_static;
 
-mod fifteen;
+mod sixteen;
 
 fn main() {
-    fifteen::day_fifteen();
+    sixteen::day_sixteen();
 }
