@@ -5,7 +5,7 @@ use std::cmp::max;
 pub fn day_seventeen() {
     let input = fs::read_to_string("input/day17.txt").expect("oh no");
 
-    let mut active_cubes = Vec::<(i64, i64, i64, i64)>::new();
+    let mut active_cubes = Vec::<Cube>::new();
 
     for (i, s) in input.lines().enumerate() {
         for (j, c) in s.chars().enumerate() {
@@ -22,12 +22,16 @@ pub fn day_seventeen() {
     println!("{}", active_cubes.len());
 }
 
-fn simulate(grid: &Vec<(i64, i64, i64, i64)>, range: &(i64, i64, i64, i64)) -> Vec<(i64, i64, i64, i64)> {
+type Grid = Vec<Cube>;
+type Cube = (i64, i64, i64, i64);
+
+fn simulate(grid: &Grid, range: &Cube) -> Grid {
     let mut active_cubes = Vec::new();
     for x in -range.0-1..=range.0+1 {
         for y in -range.1-1..=range.1+1 {
             for z in -range.2-1..=range.2+1 {
                 for w in -range.3-1..=range.3+1 {
+
                     let neighbors = number_of_neighbors(grid, (x, y, z, w));
                     if neighbors == 2 {
                         let is_active = grid.contains(&(x, y, z, w));
@@ -38,6 +42,7 @@ fn simulate(grid: &Vec<(i64, i64, i64, i64)>, range: &(i64, i64, i64, i64)) -> V
                     if neighbors == 3 {
                         active_cubes.push((x, y, z, w));
                     }
+
                 }
             }
         }
@@ -46,19 +51,19 @@ fn simulate(grid: &Vec<(i64, i64, i64, i64)>, range: &(i64, i64, i64, i64)) -> V
     active_cubes
 }
 
-fn number_of_neighbors(grid: &Vec::<(i64, i64, i64, i64)>, cube: (i64, i64, i64, i64)) -> u8 {
+fn number_of_neighbors(grid: &Grid, cube: Cube) -> u8 {
     let mut neighbors = 0;
 
     for x in -1..=1 {
         for y in -1..=1 {
             for z in -1..=1 {
                 for w in -1..=1 {
-                    if x == 0 && y == 0 && z == 0 && w == 0 {
+                    if (x, y, z, w) == (0, 0, 0, 0){
                         continue;
                     }
     
                     if grid.contains(&(cube.0 + x, cube.1 + y, cube.2 + z, cube.3 + w)) {
-                        neighbors += 1
+                        neighbors += 1;
                     }
                 }
             }
@@ -68,7 +73,7 @@ fn number_of_neighbors(grid: &Vec::<(i64, i64, i64, i64)>, cube: (i64, i64, i64,
     neighbors
 }
 
-fn get_range(grid: &Vec::<(i64, i64, i64, i64)>) -> (i64, i64, i64, i64) {
+fn get_range(grid: &Grid) -> Cube {
     let mut range = (0, 0, 0, 0);
     for cube in grid.iter() {
         range.0 = std::cmp::max(range.0, cube.0.abs());
