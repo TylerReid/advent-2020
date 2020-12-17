@@ -1,16 +1,17 @@
 use std::fs;
 use std::convert::TryInto;
 use std::cmp::max;
+use std::collections::HashSet;
 
 pub fn day_seventeen() {
     let input = fs::read_to_string("input/day17.txt").expect("oh no");
 
-    let mut active_cubes = Vec::<Cube>::new();
+    let mut active_cubes = HashSet::new();
 
     for (i, s) in input.lines().enumerate() {
         for (j, c) in s.chars().enumerate() {
             if c == '#' {
-                active_cubes.push((i.try_into().unwrap(), j.try_into().unwrap(), 0, 0));
+                active_cubes.insert((i.try_into().unwrap(), j.try_into().unwrap(), 0, 0));
             }
         }
     }
@@ -22,11 +23,11 @@ pub fn day_seventeen() {
     println!("{}", active_cubes.len());
 }
 
-type Grid = Vec<Cube>;
+type Grid = HashSet<Cube>;
 type Cube = (i64, i64, i64, i64);
 
 fn simulate(grid: &Grid, range: &Cube) -> Grid {
-    let mut active_cubes = Vec::new();
+    let mut active_cubes = HashSet::new();
     for x in -range.0-1..=range.0+1 {
         for y in -range.1-1..=range.1+1 {
             for z in -range.2-1..=range.2+1 {
@@ -36,11 +37,11 @@ fn simulate(grid: &Grid, range: &Cube) -> Grid {
                     if neighbors == 2 {
                         let is_active = grid.contains(&(x, y, z, w));
                         if is_active {
-                            active_cubes.push((x, y, z, w));
+                            active_cubes.insert((x, y, z, w));
                         }
                     }
                     if neighbors == 3 {
-                        active_cubes.push((x, y, z, w));
+                        active_cubes.insert((x, y, z, w));
                     }
 
                 }
