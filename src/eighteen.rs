@@ -63,12 +63,11 @@ fn lex(s: &str) -> Vec<Token> {
     tokens
 }
 
-fn parse(t: &[Token]) -> VecDeque<Token> {
-    let mut tokens = t.iter().peekable();
-    let mut op_stack = Vec::<Op>::new();
+fn parse(tokens: &[Token]) -> VecDeque<Token> {
+    let mut op_stack = Vec::new();
     let mut output = VecDeque::new();
 
-    while let Some(token) = tokens.next() {
+    for token in tokens.iter() {
         match token {
             Token::Number(_) => output.push_back(*token),
             Token::Op(op) => {
