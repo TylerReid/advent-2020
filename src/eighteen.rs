@@ -60,7 +60,7 @@ fn lex(s: &str) -> Vec<Token> {
                     let mut d = vec![c];
                     while let Some(&n) = chars.peek() {
                         if n.is_digit(10) {
-                            d.push(n);
+                            d.push(chars.next().unwrap());
                         } else {
                             break;
                         }
