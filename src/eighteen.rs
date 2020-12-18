@@ -38,30 +38,26 @@ fn eval(t: &mut VecDeque<Token>) -> i64 {
 fn lex(s: &str) -> Vec<Token> {
     let mut tokens = Vec::new();
     let mut chars = s.chars().peekable();
-    loop {
-        if let Some(c) = chars.next() {
-            match c {
-                ' ' => (),
-                '+' => tokens.push(Token::Op(Op::Plus)),
-                '*' => tokens.push(Token::Op(Op::Multiply)),
-                '(' => tokens.push(Token::Op(Op::OpenParen)),
-                ')' => tokens.push(Token::Op(Op::CloseParen)),
-                _ if c.is_digit(10) => {
-                    let mut d = vec![c];
-                    while let Some(&n) = chars.peek() {
-                        if n.is_digit(10) {
-                            d.push(chars.next().unwrap());
-                        } else {
-                            break;
-                        }
+    while let Some(c) = chars.next() {
+        match c {
+            ' ' => (),
+            '+' => tokens.push(Token::Op(Op::Plus)),
+            '*' => tokens.push(Token::Op(Op::Multiply)),
+            '(' => tokens.push(Token::Op(Op::OpenParen)),
+            ')' => tokens.push(Token::Op(Op::CloseParen)),
+            _ if c.is_digit(10) => {
+                let mut d = vec![c];
+                while let Some(&n) = chars.peek() {
+                    if n.is_digit(10) {
+                        d.push(chars.next().unwrap());
+                    } else {
+                        break;
                     }
-                    let n: String = d.iter().collect();
-                    tokens.push(Token::Number(n.parse().unwrap()))
-                },
-                _ => panic!("unexpected character {}", c),
-            }
-        } else {
-            break;
+                }
+                let n: String = d.iter().collect();
+                tokens.push(Token::Number(n.parse().unwrap()))
+            },
+            _ => panic!("unexpected character {}", c),
         }
     }
     tokens
