@@ -1,4 +1,5 @@
 use std::fs;
+use std::collections::VecDeque;
 
 pub fn day_eighteen() {
     let input = fs::read_to_string("input/day18.txt")
@@ -9,40 +10,29 @@ pub fn day_eighteen() {
 
     let mut sum = 0;
     for x in input.iter() {
-        sum += eval(x);
+        sum += eval(&mut parse(&lex(x)));
     }
 
     println!("{}", sum);
 }
 
-fn eval(s: &str) -> i64 {
-    eval_tokens(&lex(s)).0
-}
-
-fn eval_tokens(tokens: &[Token]) -> (i64, usize) {
-    let mut op = Op::Plus;
-    let mut result = 0;
-    let mut i = 0;
-    while i < tokens.len() {
-        match tokens[i] {
-            Token::Number(n) => match op {
-                Op::Plus => result += n,
-                Op::Multiply => result *= n,
-            },
-            Token::Op(o) => op = o,
-            Token::OpenParen => {
-                let n = eval_tokens(&tokens[i+1..tokens.len()]);
-                i += n.1;
-                match op {
-                    Op::Plus => result += n.0,
-                    Op::Multiply => result *= n.0,
+fn eval(t: &mut VecDeque<Token>) -> i64 {
+    let mut stack = Vec::new();
+    while let Some(token) = t.pop_front() {
+        match token {
+            Token::Number(n) => stack.push(n),
+            Token::Op(o) => {
+                let l = stack.pop().unwrap();
+                let r = stack.pop().unwrap();
+                match o {
+                    Op::Plus => stack.push(l + r),
+                    Op::Multiply => stack.push(l * r),
+                    _ => panic!("unexpected op {:?}", o),
                 }
-            },
-            Token::CloseParen => return (result, i+1),
+            }
         }
-        i += 1;
     }
-    (result, tokens.len())
+    stack.pop().unwrap()
 }
 
 fn lex(s: &str) -> Vec<Token> {
@@ -54,8 +44,8 @@ fn lex(s: &str) -> Vec<Token> {
                 ' ' => (),
                 '+' => tokens.push(Token::Op(Op::Plus)),
                 '*' => tokens.push(Token::Op(Op::Multiply)),
-                '(' => tokens.push(Token::OpenParen),
-                ')' => tokens.push(Token::CloseParen),
+                '(' => tokens.push(Token::Op(Op::OpenParen)),
+                ')' => tokens.push(Token::Op(Op::CloseParen)),
                 _ if c.is_digit(10) => {
                     let mut d = vec![c];
                     while let Some(&n) = chars.peek() {
@@ -77,16 +67,71 @@ fn lex(s: &str) -> Vec<Token> {
     tokens
 }
 
+fn parse(t: &[Token]) -> VecDeque<Token> {
+    let mut tokens = t.iter().peekable();
+    let mut op_stack = Vec::<Op>::new();
+    let mut output = VecDeque::new();
+
+    while let Some(token) = tokens.next() {
+        match token {
+            Token::Number(_) => output.push_back(*token),
+            Token::Op(op) => {
+                match op {
+                    Op::OpenParen => op_stack.push(*op),
+                    Op::Plus | Op::Multiply => {
+                        while let Some(top_op) = op_stack.last() {
+                            if let Op::OpenParen = top_op {
+                                break;
+                            } else if top_op.precedence() >= op.precedence() {
+                                output.push_back(Token::Op(op_stack.pop().unwrap()));
+                            } else {
+                                break;
+                            }
+                        }
+                        op_stack.push(*op);
+                    },
+                    Op::CloseParen => {
+                        while let Some(top_op) = op_stack.last() {
+                            if let Op::OpenParen = top_op {
+                                op_stack.pop();
+                                break;
+                            } else {
+                                output.push_back(Token::Op(op_stack.pop().unwrap()));
+                            }
+                        }
+                    },
+                }
+            }
+        }
+    }
+
+    while let Some(_) = op_stack.last() {
+        output.push_back(Token::Op(op_stack.pop().unwrap()));
+    }
+    output
+}
+
 #[derive(Debug, Clone, Copy)]
 enum Token {
     Op(Op),
     Number(i64),
-    OpenParen,
-    CloseParen,
 }
 
 #[derive(Debug, Clone, Copy)]
 enum Op {
     Plus,
     Multiply,
+    OpenParen,
+    CloseParen,
+}
+
+impl Op {
+    fn precedence(&self) -> u8 {
+        match self {
+            Op::Multiply => 1,
+            Op::Plus => 2,
+            Op::OpenParen => 42,
+            Op::CloseParen => 42,
+        }
+    }
 }
