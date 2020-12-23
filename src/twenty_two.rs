@@ -27,23 +27,19 @@ pub fn f() {
     let mut p1_part2 = player_one.clone();
     let mut p2_part2 = player_two.clone();
 
-    // while player_one.len() > 0 && player_two.len() > 0 {
-    //     play_hand(&mut player_one, &mut player_two);
-    // }
+    while player_one.len() > 0 && player_two.len() > 0 {
+        play_hand(&mut player_one, &mut player_two);
+    }
 
-    // let mut winner = if player_one.len() == 0 { player_two } else { player_one };
+    let mut winner = if player_one.len() == 0 { player_two } else { player_one };
 
-    // println!("winning score: {}", winning_score(&mut winner));
+    println!("winning score: {}", winning_score(&mut winner));
 
-    play_recursive(1, 1, &mut Vec::new(), &mut p1_part2, &mut p2_part2);
+    play_recursive(&mut Vec::new(), &mut p1_part2, &mut p2_part2);
 }
 
-fn play_recursive(round: u32, game: u32, previous_hands: &mut Vec<(VecDeque<u32>, VecDeque<u32>)>, p1: &mut VecDeque<u32>, p2: &mut VecDeque<u32>) -> bool {
+fn play_recursive(previous_hands: &mut Vec<(VecDeque<u32>, VecDeque<u32>)>, p1: &mut VecDeque<u32>, p2: &mut VecDeque<u32>) -> bool {
     loop {
-        // println!("-- Round {} (Game {}) --", round, game); 
-        // println!("Player 1's deck: {:?}", p1);
-        // println!("Player 2's deck: {:?}", p2);
-        
         if previous_hands.contains(&(p1.clone(), p2.clone())) {
             return true;
         }
@@ -56,11 +52,7 @@ fn play_recursive(round: u32, game: u32, previous_hands: &mut Vec<(VecDeque<u32>
             panic!("did not expect two cards to be the same {}", p1_card);
         }
 
-        //println!("p1 plays: {}", p1_card);
-        //println!("p2 plays: {}", p2_card);
-
         if p1_card <= p1.len() as u32 && p2_card <= p2.len() as u32 {
-            //println!("start recursive game");
             let mut p1_copy = p1.clone();
             let mut p2_copy = p2.clone();
             while p1_copy.len() > p1_card as usize {
@@ -69,35 +61,25 @@ fn play_recursive(round: u32, game: u32, previous_hands: &mut Vec<(VecDeque<u32>
             while p2_copy.len() > p2_card as usize {
                 p2_copy.pop_back();
             }
-            let p1_wins = play_recursive(1, game + 1, &mut Vec::new(), &mut p1_copy, &mut p2_copy);
+            let p1_wins = play_recursive(&mut Vec::new(), &mut p1_copy, &mut p2_copy);
 
             if p1_wins {
                 give_winner_cards(p1, p1_card, p2_card);
-                //println!("p1 wins recursive");
             } else {
                 give_winner_cards(p2, p2_card, p1_card);
-                //println!("p2 wins recursive");
             }
         } else if p1_card > p2_card {
             give_winner_cards(p1, p1_card, p2_card);
-            //println!("p1 wins");
         } else {
             give_winner_cards(p2, p2_card, p1_card);
-            //println!("p2 wins");
         }
 
         if p1.len() == 0 {
-            //println!("p2 wins final");
-            //println!("Player 1's deck: {:?}", p1);
-            //println!("Player 2's deck: {:?}", p2);
             println!("{}", winning_score(p2));
             return false;
         }
 
         if p2.len() == 0 {
-            //println!("p1 wins final");
-            //println!("Player 1's deck: {:?}", p1);
-            //println!("Player 2's deck: {:?}", p2);
             println!("{}", winning_score(p1));
             return true;
         }
