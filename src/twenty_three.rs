@@ -1,73 +1,81 @@
 use std::fs;
+use std::collections::HashMap;
+
+const number_of_cups: usize = 1_000_001;
+const lowest_cup: usize = 1;
+const highest_cup: usize = 1_000_000;
 
 pub fn f() {
     let input = "327465189";
+    let mut current_cup = input.chars().next().unwrap().to_digit(10).unwrap() as usize;
+    let mut cups = [0; number_of_cups];
+    let mut chars = input.chars().peekable();
+    while let Some(x) = chars.next() {
+        let current = x.to_digit(10).unwrap() as usize;
+        let next = match chars.peek() {
+            Some(y) => y.to_digit(10).unwrap() as usize,
+            None => 10,
+        };
+        cups[current] = next;
+    }
 
-    let mut cups = input.chars().map(|x| x.to_digit(10).unwrap()).collect::<Vec<u32>>();
-    let mut current_cup: usize = 0;
+    for i in 10..=1_000_000 {
+        cups[i] = if i + 1 == number_of_cups { current_cup } else { i + 1 }
+    }    
 
-    for i in 1..101 {
+    for i in 1..=10_000_000 {
         current_cup = do_move(&mut cups, current_cup, i);
     }
 
-    println!("final: {} - {:?}", current_cup, cups);
-    let one_index = cups.iter().position(|&x| x == 1).unwrap();
-    for i in 1..9 {
-        print!("{}", cups[(one_index + i) % cups.len()]);
-    }
+    let one = cups[1];
+    let two = cups[one];
+
+    println!("{} * {} = {}", one, two, one * two);
 }
 
-fn do_move(cups: &mut Vec<u32>, current_cup: usize, move_number: u32) -> usize {
-    //set up data needed later before cups is modified
-    let mut current_cup_value = cups[current_cup];
-    let mut destination = cups[current_cup] - 1;
-    let lowest_cup = cups.iter().min().unwrap().clone();
-    let highest_cup = cups.iter().max().unwrap().clone();
-    //print debug info
-    println!("-- move {} --", move_number);
-    print!("cups: ");
-    for (i, c) in cups.iter().enumerate() {
-        if i == current_cup {
-            print!("({}) ", c);
-        } else {
-            print!("{} ", c);
-        }
-    }
-    println!("");
+fn do_move(cups: &mut [usize; number_of_cups], current_cup: usize, move_number: u32) -> usize {
     //pick out next 3 cups
-    let mut pickup_index = (current_cup + 1) % cups.len();
-    let mut pickup_cups = Vec::new();
-    for _ in 0..3 {
-        if pickup_index >= cups.len() {
-            pickup_index = 0
-        }
-        pickup_cups.push(cups.remove(pickup_index));
-    }
-    print!("pick up: ");
-    for p in pickup_cups.iter() {
-        print!("{}, ", p);
-    }
-    println!("");
+    //println!("-- move {} --", move_number);
+    //print!("cups: ");
+    //print_cups(cups, current_cup);
+    
+    let pickup_one = cups[current_cup];
+    let pickup_two = cups[pickup_one];
+    let pickup_three = cups[pickup_two];
+    //println!("pick up: {} {} {}", pickup_one, pickup_two, pickup_three);
+    //cut the three out of the chain
+    cups[current_cup] = cups[pickup_three];
+
     //get destination
+    let mut destination = current_cup - 1;
     destination = loop {
         if destination < lowest_cup {
             destination = highest_cup;
             continue;
         }
-        if pickup_cups.contains(&destination) {
+        if destination == pickup_one || destination == pickup_two || destination == pickup_three {
             destination -= 1;
             continue;
         }
         break destination;
     };
-    println!("desination: {}", destination);
-
-    let insert_index = cups.iter()
-        .position(|&x| x == destination).unwrap() + 1;
+    //println!("destination: {}", destination);
     //insert cups
-    for i in 0..3 {
-        cups.insert(insert_index + i, pickup_cups[i]);
+    let end = cups[destination];
+    cups[destination] = pickup_one;
+    cups[pickup_one] = pickup_two;
+    cups[pickup_two] = pickup_three;
+    cups[pickup_three] = end;
+
+    cups[current_cup]
+}
+
+fn print_cups(cups: &[usize; number_of_cups], start: usize) {
+    print!("({}) ", start);
+    let mut next = cups[start];
+    while next != start {
+        print!("{} ", next);
+        next = cups[next];
     }
     println!("");
-    (cups.iter().position(|&x| x == current_cup_value).unwrap() + 1) % cups.len()
 }
