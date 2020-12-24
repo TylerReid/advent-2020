@@ -25,6 +25,24 @@ pub fn f() {
         }
         println!("count: {}", black_tiles.len());
     }
+
+    for i in 0..100 {
+        let mut next_tiles = HashSet::new();
+        for t in black_tiles.iter() {
+            let w = white_neighbors(&black_tiles, t);
+            if w.len() == 5 || w.len() == 4 {
+                next_tiles.insert(*t);
+            }
+            for x in w.iter() {
+                if white_neighbors(&black_tiles, x).len() == 4 {
+                    next_tiles.insert(*x);
+                }
+            }
+        }
+        black_tiles = next_tiles;
+    }
+
+    println!("{}", black_tiles.len());
 }
 
 type Tile = (i32, i32, i32);
@@ -68,6 +86,27 @@ fn do_instruction(t: &Tile, i: &Instruction) -> Tile {
         },
     }
     new
+}
+
+fn white_neighbors(black_tiles: &HashSet<Tile>, tile: &Tile) -> Vec<Tile> {
+    let mut v = Vec::new();
+
+    let neighbors = vec![
+        do_instruction(tile, &Instruction::E),
+        do_instruction(tile, &Instruction::SE),
+        do_instruction(tile, &Instruction::SW),
+        do_instruction(tile, &Instruction::W),
+        do_instruction(tile, &Instruction::NW),
+        do_instruction(tile, &Instruction::NE),
+    ];
+
+    for n in neighbors {
+        if !black_tiles.contains(&n) {
+            v.push(n);
+        }
+    }
+
+    v
 }
 
 fn parse(s: &str) -> Vec<Instruction> {
